@@ -2,17 +2,17 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import mongoose from "mongoose";
-import Employee from "./models/employee.schema";
+import authRoutes from "./routes/auth.route"
+import employeeRoutes from "./routes/employee.route"
 import Attendance from "./models/attendance.schema";
 
 const PORT = 8000;
 const app = express();
 
-app.use(
-    cors({
-        credentials: true,
-    })
-);
+app.use(cors({
+    origin: "*",
+    credentials: true
+}));
 app.use(bodyParser.json());
 
 app.get("/", (req: express.Request, res: express.Response) => {
@@ -26,58 +26,13 @@ app.listen(PORT, () => {
 });
 
 
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/employee", employeeRoutes);
 
 
 
 
-//endpoint to register a employee
-app.post("/addEmployee", async (req, res) => {
-    try {
-        const {
-            employeeName,
-            employeeId,
-            designation,
-            phoneNumber,
-            dateOfBirth,
-            joiningDate,
-            activeEmployee,
-            salary,
-            address,
-        } = req.body;
-
-        //create a new Employee
-        const newEmployee = new Employee({
-            employeeName,
-            employeeId,
-            designation,
-            phoneNumber,
-            dateOfBirth,
-            joiningDate,
-            activeEmployee,
-            salary,
-            address,
-        });
-
-        await newEmployee.save();
-
-        res
-            .status(201)
-            .json({ message: "Employee saved successfully", employee: newEmployee });
-    } catch (error) {
-        console.log("Error creating employee", error);
-        res.status(500).json({ message: "Failed to add an employee" });
-    }
-});
-
-//endpoint to fetch all the employees
-app.get("/employees", async (req, res) => {
-    try {
-        const employees = await Employee.find();
-        res.status(200).json(employees);
-    } catch (error) {
-        res.status(500).json({ message: "Failed to retrieve the employees" });
-    }
-});
 
 app.post("/attendance", async (req, res) => {
     try {
