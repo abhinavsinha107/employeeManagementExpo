@@ -5,8 +5,10 @@ import {
   ScrollView,
   TextInput,
   Pressable,
+  Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useRegisterEmployeeMutation } from "../../services/api";
 
 const addDetails = () => {
   const [name, setName] = useState<string>("");
@@ -18,7 +20,10 @@ const addDetails = () => {
   const [address, setAddress] = useState<string>("");
   const [designation, setDesignation] = useState<string>("");
 
-  const handleRegister = () => {
+  const [registerEmployee, { data, isSuccess, isError, error }] =
+    useRegisterEmployeeMutation();
+
+  const handleRegister = async () => {
     const employeeData = {
       employeeName: name,
       employeeId: employeeId,
@@ -30,7 +35,39 @@ const addDetails = () => {
       salary: +salary,
       address: address,
     };
+    if (employeeData) {
+      await registerEmployee(employeeData)
+        .then((response) => {
+          Alert.alert(
+            "Registration Successful",
+            "You have been registered successfully"
+          );
+          setName("");
+          setEmployeeId("");
+          setDob("");
+          setMobileNo("");
+          setSalary("");
+          setAddress("");
+          setJoiningDate("");
+          setDesignation("");
+        })
+        .catch((error) => {
+          Alert.alert(
+            "Registration Fail",
+            "An error occurred during registration"
+          );
+          console.log("register failed", error);
+        });
+    } else {
+      console.log("Error occured while registering employee");
+    }
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      console.log("User registered successfully...");
+    }
+  }, [isSuccess]);
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "white" }}>

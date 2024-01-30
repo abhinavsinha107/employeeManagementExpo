@@ -9,3 +9,10 @@ interface Employee {
     phoneNumber: string;
     address: string;
 }
+
+interface Attendance {
+  employeeId: string;
+  employeeName: string;
+  date: string;
+  status: string;
+}
